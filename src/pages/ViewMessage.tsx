@@ -22,7 +22,7 @@ function ViewMessage() {
   const params = useParams<{ id: string }>();
 
   useIonViewWillEnter(() => {
-    const msg = getMessage(parseInt(params.id, 10));
+    const msg = getMessage(params.id);
     setMessage(msg);
   });
 
@@ -43,9 +43,9 @@ function ViewMessage() {
               <IonIcon icon={personCircle} color="primary"></IonIcon>
               <IonLabel className="ion-text-wrap">
                 <h2>
-                  {message.fromName}
-                  <span className="date">
-                    <IonNote>{message.date}</IonNote>
+                  {message.name}
+                  <span>
+                    <IonNote>{message.availability.quantity}</IonNote>
                   </span>
                 </h2>
                 <h3>
@@ -55,7 +55,7 @@ function ViewMessage() {
             </IonItem>
 
             <div className="ion-padding">
-              <h1>{message.subject}</h1>
+              <h1>{message.description}</h1>
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut

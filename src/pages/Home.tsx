@@ -14,6 +14,8 @@ import {
 } from '@ionic/react';
 import './Home.css';
 
+import { Browser } from '@capacitor/browser';
+
 const Home: React.FC = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -29,7 +31,15 @@ const Home: React.FC = () => {
     }, 3000);
   };
 
+  const openCapacitorSite = async () => {
+    await Browser.open({ url: 'https://web-nodejs-coolstore-prod.apps.cvuj4v8t.eastus.aroapp.io/' });
+  };
+
+
   return (
+
+    openCapacitorSite()
+    ,
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
@@ -50,7 +60,7 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
+          {messages.map(m => <MessageListItem key={m.itemId} message={m} />)}
         </IonList>
       </IonContent>
     </IonPage>
