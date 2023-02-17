@@ -34,15 +34,12 @@ spec:
     - name: revision
       value: "{{ revision }}"
     - name: IMAGE_NAME
-      default: >-
+      value: >-
         image-registry.openshift-image-registry.svc:5000/coolstore-mobile/coolstore-mobile
-      type: string
-    - default: .
+    - value: .
       name: PATH_CONTEXT
-      type: string
-    - default: 16-ubi8
+    - value: 16-ubi8
       name: VERSION
-      type: string
   pipelineSpec:
     params:
       - name: repo_url
