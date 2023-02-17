@@ -78,7 +78,7 @@ spec:
           name: s2i-nodejs
         workspaces:
           - name: source
-            workspace: workspace
+            workspace: source
   workspaces:
     - name: source
       volumeClaimTemplate:
