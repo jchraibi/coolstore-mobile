@@ -40,6 +40,8 @@ spec:
       name: PATH_CONTEXT
     - value: 16-ubi8
       name: VERSION
+    - name: APP_NAME
+      value: coolstore-mobile
   pipelineSpec:
     params:
       - name: repo_url
