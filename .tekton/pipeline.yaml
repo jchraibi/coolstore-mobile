@@ -1,0 +1,101 @@
+piVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app.kubernetes.io/instance: coolstore-mobile
+    app.kubernetes.io/name: coolstore-mobile
+    operator.tekton.dev/operand-name: openshift-pipelines-addons
+    pipeline.openshift.io/runtime: nodejs
+    pipeline.openshift.io/runtime-version: 16-ubi8
+    pipeline.openshift.io/type: kubernetes
+  name: coolstore-mobile
+  annotations:
+    # The event we are targeting as seen from the webhook payload
+    # this can be an array too, i.e: [pull_request, push]
+    pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
+
+    # The branch or tag we are targeting (ie: main, refs/tags/*)
+    pipelinesascode.tekton.dev/on-target-branch: "[main]"
+
+    # Fetch the git-clone task from hub, we are able to reference later on it
+    # with taskRef and it will automatically be embedded into our pipeline.
+    #pipelinesascode.tekton.dev/task: "git-clone"
+
+    # Task for Nodejs
+    #pipelinesascode.tekton.dev/task-1: "[npm]"
+
+    # You can add more tasks by increasing the suffix number, you can specify them as array to have multiple of them.
+    # browse the tasks you want to include from hub on https://hub.tekton.dev/
+    #
+    # pipelinesascode.tekton.dev/task-2: "[curl, buildah]"
+
+    # How many runs we want to keep attached to this event
+    pipelinesascode.tekton.dev/max-keep-runs: "5"
+  namespace: coolstore-mobile
+spec:
+  params:
+    - default: coolstore-mobile
+      name: APP_NAME
+      type: string
+    - default: 'https://github.com/jchraibi/coolstore-mobile.git'
+      name: GIT_REPO
+      type: string
+    - default: ''
+      name: GIT_REVISION
+      type: string
+    - default: >-
+        image-registry.openshift-image-registry.svc:5000/coolstore-mobile/coolstore-mobile
+      name: IMAGE_NAME
+      type: string
+    - default: .
+      name: PATH_CONTEXT
+      type: string
+    - default: 16-ubi8
+      name: VERSION
+      type: string
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: $(params.GIT_REPO)
+        - name: revision
+          value: $(params.GIT_REVISION)
+        - name: subdirectory
+          value: ''
+        - name: deleteExisting
+          value: 'true'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: workspace
+    - name: build
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE_NAME)
+        - name: TLSVERIFY
+          value: 'false'
+        - name: PATH_CONTEXT
+          value: $(params.PATH_CONTEXT)
+        - name: VERSION
+          value: $(params.VERSION)
+      runAfter:
+        - fetch-repository
+      taskRef:
+        kind: ClusterTask
+        name: s2i-nodejs
+      workspaces:
+        - name: source
+          workspace: workspace
+    - name: deploy
+      params:
+        - name: SCRIPT
+          value: oc rollout status deploy/$(params.APP_NAME)
+      runAfter:
+        - build
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+  workspaces:
+    - name: workspace
