@@ -79,6 +79,15 @@ spec:
         workspaces:
           - name: source
             workspace: source
+      - name: deploy
+        params:
+          - name: SCRIPT
+            value: oc rollout status deploy/$(params.APP_NAME)
+        runAfter:
+          - build
+        taskRef:
+          kind: ClusterTask
+          name: openshift-client
   workspaces:
     - name: source
       volumeClaimTemplate:
