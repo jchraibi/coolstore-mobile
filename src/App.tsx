@@ -4,7 +4,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import ViewMessage from './pages/ViewMessage';
 
-/* new code v5 */ 
+/* new code v6 */ 
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
